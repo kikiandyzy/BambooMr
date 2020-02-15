@@ -77,7 +77,7 @@ public class CreateFragment extends Fragment {
                 int[] house={R.drawable.house1,R.drawable.house2,R.drawable.house3};
                 imageView.setImageDrawable(getResources().getDrawable(house[choice]));  //图片资源
                 imageView.setX(x-120);
-                imageView.setY(y);
+                imageView.setY(y+200);
                 imageView.setId(houses.size());
                 imageView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -90,7 +90,7 @@ public class CreateFragment extends Fragment {
                         startActivity(intent);
                     }
                 });
-                houses.add(new house(x-120,y,choice,houses.size()));
+                houses.add(new house(x-120,y+200,choice,houses.size()));
                 serve.save();
                 relativeLayout.addView(imageView); //动态添加图片
                 picker.setVisibility(View.INVISIBLE);
@@ -131,7 +131,7 @@ public class CreateFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         wei=v.getId();
-                        Intent intent = new Intent(getContext(), addActivity.class);
+                        Intent intent = new Intent(getContext(), new_add_Activity.class);
                         //startActivityForResult(intent, 111);
                         startActivity(intent);
                     }

@@ -1,12 +1,13 @@
 package com.example.bamboomr.house;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Aim implements Serializable {
     private String big_aim;
     private String start_time;
     private String end_time;
-    private Phase[] phase;
+    private ArrayList<Phase> phase;
 
     public String getBig_aim() {
         return big_aim;
@@ -32,11 +33,11 @@ public class Aim implements Serializable {
         this.end_time = end_time;
     }
 
-    public Phase[] getPhase() {
+    public ArrayList<Phase> getPhase() {
         return phase;
     }
 
-    public void setPhase(Phase[] phase) {
+    public void setPhase(ArrayList<Phase> phase) {
         this.phase = phase;
     }
 }

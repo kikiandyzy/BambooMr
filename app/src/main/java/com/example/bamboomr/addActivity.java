@@ -110,18 +110,18 @@ public class addActivity extends AppCompatActivity  implements View.OnClickListe
             ambition.setText(aim.getBig_aim());
             start.setText(aim.getStart_time());
             end.setText(aim.getEnd_time());
-            Phase[] phases=aim.getPhase();
-            Task[] every_tasts=phases[0].getEvery_tast();
+            ArrayList<Phase> phases=aim.getPhase();
+            ArrayList<Task> every_tasts=phases.get(0).getEvery_tast();
             theset2 = new ArrayList<Task>();
-            for(int i=0;i<every_tasts.length;i++)
+            for(int i=0;i<every_tasts.size();i++)
             {
-                theset2.add(every_tasts[i]);
+                theset2.add(every_tasts.get(i));
             }
-            Task[] myself_tasts=phases[0].getMyself_tast();
+            ArrayList<Task> myself_tasts=phases.get(0).getMyself_tast();
             theset3 = new ArrayList<Task>();
-            for(int i=0;i<myself_tasts.length;i++)
+            for(int i=0;i<myself_tasts.size();i++)
             {
-                theset3.add(myself_tasts[i]);
+                theset3.add(myself_tasts.get(i));
             }
             set_everydat_time();
         }
@@ -164,17 +164,11 @@ public class addActivity extends AppCompatActivity  implements View.OnClickListe
 
                 //进行信息保存然后返回
                 house gai=  CreateFragment.houses.get(CreateFragment.wei);
-                Task[] every_tasks=new Task[theset2.size()];
-                for(int i=0;i<theset2.size();i++)
-                    every_tasks[i]=theset2.get(i);
-                Task[] myself_tasks=new Task[theset3.size()];
-                for(int i=0;i<theset3.size();i++)
-                    myself_tasks[i]=theset3.get(i);
-                Phase[] phases=new Phase[1];
+                ArrayList<Phase> phases=new ArrayList<Phase>();
                 Phase phase=new Phase();
-                phase.setEvery_tast(every_tasks);
-                phase.setMyself_tast(myself_tasks);
-                phases[0]=phase;
+                phase.setEvery_tast(theset2);
+                phase.setMyself_tast(theset3);
+                phases.add(phase);
                 Aim aim=new Aim();
                 aim.setPhase(phases);
                 aim.setStart_time(start.getText().toString());

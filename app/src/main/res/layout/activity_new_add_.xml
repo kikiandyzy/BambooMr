@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".new_add_Activity"
+    android:background="@drawable/background">
+
+    <RelativeLayout
+        android:id="@+id/first"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/cancel"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/cancel"></ImageView>
+
+    <ImageView
+        android:id="@+id/finish"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/finish"></ImageView>
+
+    <ImageView
+        android:id="@+id/xian"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="75dp"
+        android:src="@drawable/xian"></ImageView>
+
+    <EditText
+        android:id="@+id/ambitions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:background="@null"
+        android:hint="请输入你的目标"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        android:textColorHint="#FFFFFF"></EditText>
+
+    <TextView
+        android:id="@+id/end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="220dp"
+        android:layout_marginTop="85dp"
+        android:background="@null"
+        android:textAlignment="center"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        android:hint="结束时间">
+    </TextView>
+
+    <TextView
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="100dp"
+        android:layout_marginTop="85dp"
+        android:background="@null"
+        android:textAlignment="center"
+        android:textColorHint="#FFFFFF"
+        android:textColor="#FFFFFF"
+        android:textSize="20dp"
+        android:hint="开始时间">
+    </TextView>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="85dp"
+        android:textColor="#FFFFFF"
+        android:text="~"></TextView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/re"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/first"
+        android:layout_marginBottom="50dp"
+        android:layout_height="wrap_content">
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:layout_editor_absoluteX="126dp"
+        tools:layout_editor_absoluteY="108dp" />
+    </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/jia"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="0dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/jia"></ImageView>
+
+
+    <ImageView
+        android:id="@+id/jian"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignLeft="@+id/jia"
+        android:layout_alignBottom="@+id/jia"
+        android:layout_marginLeft="40dp"
+        android:src="@drawable/jian"></ImageView>
+</RelativeLayout>

@@ -9,7 +9,7 @@ public class house implements Serializable {
     private int picture;
     private int id;
 
-    private boolean empty;
+    private boolean empty=true;
     private Aim aim;
 
     public boolean isEmpty() {
