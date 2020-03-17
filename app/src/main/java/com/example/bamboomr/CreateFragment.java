@@ -85,7 +85,7 @@ public class CreateFragment extends Fragment {
                         //发送房子的id识别房子
                         wei=v.getId();
                         wei=v.getId();
-                        Intent intent = new Intent(getContext(), addActivity.class);
+                        Intent intent = new Intent(getContext(), new_add_Activity.class);
                         //startActivityForResult(intent, 111);
                         startActivity(intent);
                     }

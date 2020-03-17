@@ -1,0 +1,167 @@
+package com.example.bamboomr.Daily;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+public class DefaultItemTouchHelpCallback extends ItemTouchHelper.Callback {
+
+    /**
+     * Item操作的回调
+     */
+    private OnItemTouchCallbackListener onItemTouchCallbackListener;
+
+
+    /**
+     * 是否可以拖拽
+     */
+    private boolean isCanDrag = false;
+    /**
+     * 是否可以被删除
+     */
+    private boolean isCanSwipe = false;
+
+    //构造函数，赋值接口
+    public DefaultItemTouchHelpCallback(OnItemTouchCallbackListener onItemTouchCallbackListener) {
+        this.onItemTouchCallbackListener = onItemTouchCallbackListener;
+    }
+
+    /**
+     * 设置Item操作的回调，去更新UI和数据源
+     *
+     * @param onItemTouchCallbackListener
+     */
+    public void setOnItemTouchCallbackListener(OnItemTouchCallbackListener onItemTouchCallbackListener) {
+        this.onItemTouchCallbackListener = onItemTouchCallbackListener;
+    }
+
+    /**
+     * 设置是否可以被拖拽
+     *
+     * @param canDrag 是true，否false
+     */
+    public void setDragEnable(boolean canDrag) {
+        isCanDrag = canDrag;
+    }
+
+    /**
+     * 设置是否可以被删除
+     *
+     * @param canSwipe 是true，否false
+     */
+    public void setSwipeEnable(boolean canSwipe) {
+        isCanSwipe = canSwipe;
+    }
+
+    //当item长按时是否能拖动
+    @Override
+    public boolean isLongPressDragEnabled() {
+        return isCanDrag;//要设置点击图标滑动的话就不要启用长按滑动
+    }
+
+
+
+    //判断是否可以被滑动
+    @Override
+    public boolean isItemViewSwipeEnabled() {
+        return isCanSwipe;
+    }
+
+    /**
+     * 当用户拖拽或者滑动Item的时候需要我们告诉系统滑动或者拖拽的方向
+     *
+     * @param recyclerView
+     * @param viewHolder
+     * @return
+     */
+    @Override
+    public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if(layoutManager instanceof GridLayoutManager){
+            // flag如果值是0，相当于这个功能被关闭
+            int dragFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT | ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+            int swipeFlag = 0;
+            // create make
+            return makeMovementFlags(dragFlag, swipeFlag);
+        }else if(layoutManager instanceof LinearLayoutManager){
+            LinearLayoutManager linearLayoutManager = (LinearLayoutManager) layoutManager;
+            int orientation = linearLayoutManager.getOrientation();//判断布局的方向
+
+            int dragFlag = 0;
+            int swipeFlag = 0;
+            // 为了方便理解，相当于分为横着的ListView和竖着的ListView
+            if (orientation == LinearLayoutManager.HORIZONTAL) {// 如果是横向的布局
+                swipeFlag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                dragFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            } else if (orientation == LinearLayoutManager.VERTICAL) {// 如果是竖向的布局，相当于ListView
+                dragFlag = ItemTouchHelper.UP | ItemTouchHelper.DOWN;
+                swipeFlag = ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT;
+            }
+            return makeMovementFlags(dragFlag, swipeFlag);
+
+
+        }
+
+        return 0;
+    }
+
+    /**
+     * 当Item被拖拽的时候被回调
+     *
+     * @param recyclerView     recyclerView
+     * srcViewHolder    拖拽的ViewHolder
+     * targetViewHolder 目的地的viewHolder
+     * @return
+     */
+    @Override
+    public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+        if(onItemTouchCallbackListener != null){
+            return  onItemTouchCallbackListener.onMove(viewHolder.getAdapterPosition(),target.getAdapterPosition());
+        }
+        return false;
+    }
+
+    @Override
+    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+        if(onItemTouchCallbackListener != null){
+            onItemTouchCallbackListener.onSwiped(viewHolder.getAdapterPosition());
+        }
+    }
+
+
+    @Override
+    public void clearView(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
+        super.clearView(recyclerView, viewHolder);
+        if(onItemTouchCallbackListener != null){
+            onItemTouchCallbackListener.clearView();
+        }
+    }
+
+    public interface OnItemTouchCallbackListener{
+        /**
+         * 当某个Item被滑动删除的时候
+         *
+         * @param adapterPosition item的position
+         */
+        void onSwiped(int adapterPosition);
+
+        /**
+         * 当两个Item位置互换的时候被回调
+         *
+         * @param srcPosition    拖拽的item的position
+         * @param targetPosition 目的地的Item的position
+         * @return 开发者处理了操作应该返回true，开发者没有处理就返回false
+         */
+        boolean onMove(int srcPosition, int targetPosition);
+
+        boolean clearView();
+
+
+
+
+    }
+
+
+}

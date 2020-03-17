@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorAccent">#D81B60</color>
     <color name="bamboo">#E1BAF379</color>
+    <color name="transparency">#00000000</color>
 </resources>

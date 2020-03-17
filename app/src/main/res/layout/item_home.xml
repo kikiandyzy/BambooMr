@@ -47,6 +47,16 @@
         android:layout_marginTop="5dp"
         android:text="0h/天"></TextView>
 
+    <TextView
+        android:id="@+id/du"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18dp"
+        android:textColor="#FFFFFF"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:text="完成度：0%"></TextView>
+
     <ImageView
         android:id="@+id/every"
         android:layout_width="90dp"

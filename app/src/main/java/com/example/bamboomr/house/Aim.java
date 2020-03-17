@@ -2,11 +2,12 @@ package com.example.bamboomr.house;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Aim implements Serializable {
     private String big_aim;
-    private String start_time;
-    private String end_time;
+    private Date start_time;
+    private Date  end_time;
     private ArrayList<Phase> phase;
 
     public String getBig_aim() {
@@ -17,19 +18,19 @@ public class Aim implements Serializable {
         this.big_aim = big_aim;
     }
 
-    public String getStart_time() {
+    public Date  getStart_time() {
         return start_time;
     }
 
-    public void setStart_time(String start_time) {
+    public void setStart_time(Date  start_time) {
         this.start_time = start_time;
     }
 
-    public String getEnd_time() {
+    public Date  getEnd_time() {
         return end_time;
     }
 
-    public void setEnd_time(String end_time) {
+    public void setEnd_time(Date  end_time) {
         this.end_time = end_time;
     }
 

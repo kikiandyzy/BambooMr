@@ -5,20 +5,27 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.example.bamboomr.house.Aim;
 import com.example.bamboomr.house.Phase;
 import com.example.bamboomr.house.house;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 public class new_add_Activity extends AppCompatActivity implements View.OnClickListener, AdapterView.OnItemClickListener,DatePickerDialog.OnDateSetListener {
@@ -33,6 +40,8 @@ public class new_add_Activity extends AppCompatActivity implements View.OnClickL
     private TextView end;
     private ImageView jia;
     private ImageView jian;
+    private Date start_data=null;
+    private Date end_data=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,10 +88,18 @@ public class new_add_Activity extends AppCompatActivity implements View.OnClickL
             mDatas = aim.getPhase();
             if(!aim.getBig_aim().isEmpty())
                 ambition.setText(aim.getBig_aim());
-            if(!aim.getStart_time().isEmpty())
-                start.setText(aim.getStart_time());
-            if(!aim.getEnd_time().isEmpty())
-                end.setText(aim.getEnd_time());
+            if(aim.getStart_time()!=null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+                start_data=aim.getStart_time();
+                start.setText(sdf.format(aim.getStart_time()));
+
+            }
+            if(aim.getEnd_time()!=null) {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+                end_data=aim.getEnd_time();
+                end.setText(sdf.format(aim.getEnd_time()));
+
+            }
         }
         else
         {
@@ -99,7 +116,34 @@ public class new_add_Activity extends AppCompatActivity implements View.OnClickL
                 recycleAdapter.addData();
                 break;
             case R.id.jian:
-                recycleAdapter.moveData(0);
+                final EditText inputServer = new EditText(this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("要删除第几个阶段").setView(inputServer)
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        String text = inputServer.getText().toString();
+                        try {
+                            //抓取转换数字的错误
+                            int i = Integer.parseInt(text);
+                            house chu=  CreateFragment.houses.get(CreateFragment.wei);
+                            if(chu.getAim().getPhase().size()>i-1)
+                                recycleAdapter.moveData(i-1);
+                            else
+                                Toast.makeText(getBaseContext(), "没有对应阶段", Toast.LENGTH_SHORT).show();
+                        }
+                        catch (NumberFormatException e1)
+                        {
+                            Toast.makeText(getBaseContext(), "请输入数字", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+                builder.show();
                 break;
             case R.id.start:
             case R.id.end:
@@ -114,16 +158,35 @@ public class new_add_Activity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.cancel:
             case R.id.finish:
-                house chu=  CreateFragment.houses.get(CreateFragment.wei);
-                chu.setEmpty(false);
-                Aim aim=new Aim();
-                aim.setBig_aim(ambition.getText().toString());
-                aim.setStart_time(start.getText().toString());
-                aim.setEnd_time(end.getText().toString());
-                aim.setPhase(recycleAdapter.getmDatas());
-                chu.setAim(aim);
-                CreateFragment.serve.save();
-                this.finish();
+                if(ambition.getText().toString().isEmpty())
+                    Toast.makeText(getBaseContext(), "请输入大目标", Toast.LENGTH_SHORT).show();
+                else if(start.getText().toString().isEmpty())
+                    Toast.makeText(getBaseContext(), "请输入开始和结束时间", Toast.LENGTH_SHORT).show();
+                else {
+                    house chu = CreateFragment.houses.get(CreateFragment.wei);
+                    ArrayList<Phase> data=recycleAdapter.getmDatas();
+                    boolean right=true;
+                    for(int i=0;i<data.size();i++)
+                    {
+                        if(data.get(i).getStart_time()==null)
+                        {
+                            Toast.makeText(getBaseContext(), "第"+(i+1)+"阶段没有设置时间", Toast.LENGTH_SHORT).show();
+                            right=false;
+                            break;
+                        }
+                    }
+                    if(right==true) {
+                        chu.setEmpty(false);
+                        Aim aim = new Aim();
+                        aim.setBig_aim(ambition.getText().toString());
+                        aim.setStart_time(start_data);
+                        aim.setEnd_time(end_data);
+                        aim.setPhase(recycleAdapter.getmDatas());
+                        chu.setAim(aim);
+                        CreateFragment.serve.save();
+                        this.finish();
+                    }
+                }
                 break;
         }
     }
@@ -135,10 +198,51 @@ public class new_add_Activity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth, int yearEnd, int monthOfYearEnd, int dayOfMonthEnd) {
+        /*SimpleDateFormat sdf = new SimpleDateFormat("MM月dd日");
+        Calendar start_time = new GregorianCalendar();
+        start_time.set(Calendar.YEAR,year);
+        start_time.set(Calendar.MONTH,monthOfYear);
+        start_time.set(Calendar.DATE,dayOfMonth);
+        Date date = start_time.getTime();
+        Calendar end_time = new GregorianCalendar();
+        end_time.set(Calendar.YEAR,yearEnd);
+        end_time.set(Calendar.MONTH,monthOfYearEnd);
+        end_time.set(Calendar.DATE,dayOfMonthEnd);
+        Date date2 = end_time.getTime();*/
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        Date date2 = null;
+        try {
+            date = sdf.parse(""+year+"-"+(monthOfYear)+"-"+dayOfMonth);
 
-        String start_time=monthOfYear+1+"月"+dayOfMonth+"日";
-        String end_time=monthOfYearEnd+1+"月"+dayOfMonthEnd+"日";
-        start.setText(start_time);
-        end.setText(end_time);
+            date2 = sdf.parse(""+yearEnd+"-"+(monthOfYearEnd)+"-"+dayOfMonthEnd);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
+
+        if(date.compareTo(date2)!=-1)
+            Toast.makeText(getBaseContext(), "结束时间不可小于开始时间", Toast.LENGTH_SHORT).show();
+        else {
+            ///start.setText(sdf.format(date));
+            //end.setText(sdf.format(date2));
+            start_data = date;
+            end_data = date2;
+            house chu = CreateFragment.houses.get(CreateFragment.wei);
+            chu.setEmpty(false);
+            Aim aim = new Aim();
+            aim.setBig_aim(ambition.getText().toString());
+            aim.setStart_time(start_data);
+            aim.setEnd_time(end_data);
+            aim.setPhase(recycleAdapter.getmDatas());
+            chu.setAim(aim);
+            CreateFragment.serve.save();
+            //新加的
+            SimpleDateFormat sdf2 = new SimpleDateFormat("MM月dd日");
+            start.setText(sdf2.format(date));
+            end.setText(sdf2.format(date2));
+        }
     }
 }

@@ -8,10 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,7 +20,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.borax12.materialdaterangepicker.date.DatePickerDialog;
 import com.example.bamboomr.house.Aim;
 import com.example.bamboomr.house.Phase;
 import com.example.bamboomr.house.Task;
@@ -30,8 +27,8 @@ import com.example.bamboomr.house.house;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.MyViewHolder> {
@@ -64,8 +61,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int positions) {
         holder.duan.setText("阶段"+(positions+1));
-        if(mDatas.get(positions).getHold_time()!=-1)
-            holder.start.setText("        "+mDatas.get(positions).getHold_time()+"天");
+        if(mDatas.get(positions).getStart_time()!=null)
+            holder.start.setText("        "+((mDatas.get(positions).getEnd_time().getTime() - mDatas.get(positions).getStart_time().getTime()) / (1000 * 60 * 60 * 24))+"天");
+        else
+            holder.start.setText("点击设置时间长度");
         mDatas.get(positions).setPhase_num(positions+1);
         final ArrayList<Task> theset2=new ArrayList<Task>();
         GoodsArrayAdapter2 theAdaper2;
@@ -73,9 +72,10 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
         final ArrayList<Task> theset3=new ArrayList<Task>();
         GoodsArrayAdapter2 theAdaper3;
         //final Phase phase;
-        if(mDatas.get(positions).isEmpty()) {
+        if(!mDatas.get(positions).isHave_done()) {
             theset2.add(new Task("空", -1, -1));
             theset3.add(new Task("空", -1, -1));
+            holder.du.setText("完成度：0.0%");
         }
         else
         {
@@ -100,6 +100,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
             }
             DecimalFormat df = new DecimalFormat("0.00");
             holder.time.setText(df.format(times/60) + "h/天");
+            holder.du.setText("完成度："+mDatas.get(positions).getFinish_time()/mDatas.get(positions).getAll_time()+"%");
         }
         /*theset2.add(new Task("空", -1, -1));
         theset3.add(new Task("空", -1, -1));*/
@@ -141,13 +142,16 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                                     try {
                                         int i = Integer.parseInt(text2);
                                         Task gai = theset2.get(position);
-                                        gai.setTast_name(text1);
+                                        gai.setTask_name(text1);
                                         gai.setDuration(i);
                                         gai.setCycle(-1);
+                                        ArrayList<Integer> id=new ArrayList<Integer>();
+                                        gai.setId(CreateFragment.wei,mDatas.get(positions).getPhase_num(),0,position);
                                     } catch (NumberFormatException e1) {
                                         Toast.makeText(mContext, "请输入数字", Toast.LENGTH_SHORT).show();
                                     }
-                                    mDatas.get(positions).setEmpty(false);
+                                    mDatas.get(positions).setHave_done(true);
+                                    mDatas.get(positions).setEvery_tast_empty(false);
                                     mDatas.get(positions).setEvery_tast(theset2);
                                     mDatas.get(positions).setMyself_tast(theset3);
                                     theAdaper2.notifyDataSetChanged();
@@ -162,7 +166,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                                     }
                                     DecimalFormat df = new DecimalFormat("0.00");
                                     holder.time.setText(df.format(times/60) + "h/天");
-                                    mDatas.get(position).setAll_time(times);
+                                    mDatas.get(positions).setAll_time(times);
 
                                 }
                             });
@@ -228,13 +232,15 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                                                     int i = Integer.parseInt(text3);
                                                     int j = Integer.parseInt(text2);
                                                     Task gai = theset3.get(position);
-                                                    gai.setTast_name(text1);
+                                                    gai.setTask_name(text1);
                                                     gai.setDuration(i);
                                                     gai.setCycle(j);
+                                                    gai.setId(CreateFragment.wei,mDatas.get(positions).getPhase_num(),1,position);
                                                 } catch (NumberFormatException e1) {
                                                     Toast.makeText(mContext, "请输入数字", Toast.LENGTH_SHORT).show();
                                                 }
-                                                mDatas.get(positions).setEmpty(false);
+                                                mDatas.get(positions).setHave_done(true);
+                                                mDatas.get(positions).setMyself_tast_empty(false);
                                                 mDatas.get(positions).setEvery_tast(theset2);
                                                 mDatas.get(positions).setMyself_tast(theset3);
                                                 theAdaper3.notifyDataSetChanged();
@@ -249,7 +255,7 @@ public class MyRecyclerAdapter extends RecyclerView.Adapter<MyRecyclerAdapter.My
                                                 }
                                                 DecimalFormat df = new DecimalFormat("0.00");
                                                 holder.time.setText(df.format(times/60) + "h/天");
-                                                mDatas.get(position).setAll_time(times);
+                                                mDatas.get(positions).setAll_time(times);
 
                                             }
                                         });
@@ -278,7 +284,7 @@ holder.every_jia.setOnClickListener(new View.OnClickListener() {
         theset2.add(new Task("空",-1,-1));
         theAdaper2.notifyDataSetChanged();
         setPullLvHeight(holder.evety_listView);
-        mDatas.get(positions).setEmpty(false);
+        mDatas.get(positions).setHave_done(true);
         mDatas.get(positions).setEvery_tast(theset2);
         mDatas.get(positions).setMyself_tast(theset3);
         notifyDataSetChanged();
@@ -313,7 +319,9 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
                 }
                 theAdaper2.notifyDataSetChanged();
                 setPullLvHeight(holder.evety_listView);
-                mDatas.get(positions).setEmpty(false);
+                mDatas.get(positions).setHave_done(true);
+                if(theset2.size()==0)
+                    mDatas.get(positions).setEvery_tast_empty(true);
                 mDatas.get(positions).setEvery_tast(theset2);
                 mDatas.get(positions).setMyself_tast(theset3);
                 notifyDataSetChanged();
@@ -328,7 +336,7 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
                 theset3.add(new Task("空",-1,-1));
                 theAdaper3.notifyDataSetChanged();
                 setPullLvHeight(holder.myself_listView);
-                mDatas.get(positions).setEmpty(false);
+                mDatas.get(positions).setHave_done(true);
                 mDatas.get(positions).setEvery_tast(theset2);
                 mDatas.get(positions).setMyself_tast(theset3);
                 notifyDataSetChanged();
@@ -363,7 +371,9 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
                         }
                         theAdaper3.notifyDataSetChanged();
                         setPullLvHeight(holder.myself_listView);
-                        mDatas.get(positions).setEmpty(false);
+                        mDatas.get(positions).setHave_done(true);
+                        if(theset3.size()==0)
+                        mDatas.get(positions).setMyself_tast_empty(true);
                         mDatas.get(positions).setEvery_tast(theset2);
                         mDatas.get(positions).setMyself_tast(theset3);
                         notifyDataSetChanged();
@@ -389,8 +399,55 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
                         String text = inputServer3.getText().toString();
                         try {
                             int i = Integer.parseInt(text);
-                            holder.start.setText("        "+i+"天");
-                            mDatas.get(positions).setHold_time(i);
+                            if(positions==0) {
+                                house chu=  CreateFragment.houses.get(CreateFragment.wei);
+                                Aim aim=chu.getAim();
+                                if(aim==null)
+                                    Toast.makeText(mContext, "请先输入总的开始和结束时间", Toast.LENGTH_SHORT).show();
+                                else {
+                                    long days=((aim.getEnd_time().getTime() - aim.getStart_time().getTime()) / (1000 * 60 * 60 * 24))+1;
+                                    if(days<i)
+                                        Toast.makeText(mContext, "填写天数超过可用天数，可用天数："+days, Toast.LENGTH_SHORT).show();
+                                    else {
+                                        holder.start.setText("        " + i + "天");
+                                        mDatas.get(positions).setStart_time(aim.getStart_time());
+                                        Date end = aim.getStart_time();
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTime(end);
+                                        cal.add(Calendar.DATE, i);
+                                        end = cal.getTime();
+                                        mDatas.get(positions).setEnd_time(end);
+                                    }
+                                }
+                            }
+                            else {
+                                if(mDatas.get(positions-1).getEnd_time()==null)
+                                    Toast.makeText(mContext, "请先输入上一阶段的时间", Toast.LENGTH_SHORT).show();
+                                else {
+                                    house chu=  CreateFragment.houses.get(CreateFragment.wei);
+                                    Aim aim=chu.getAim();
+                                    long days=((aim.getEnd_time().getTime() - aim.getStart_time().getTime()) / (1000 * 60 * 60 * 24));
+                                    for(int j=0;j<positions;j++)
+                                        days-=((mDatas.get(j).getEnd_time().getTime() - mDatas.get(j).getStart_time().getTime()) / (1000 * 60 * 60 * 24));
+                                    if (days<i)
+                                        Toast.makeText(mContext, "填写天数超过可用天数，可用天数："+days, Toast.LENGTH_SHORT).show();
+                                    else {
+                                        holder.start.setText("        " + i + "天");
+                                        Date start_data = mDatas.get(positions - 1).getEnd_time();
+                                        Calendar cal = Calendar.getInstance();
+                                        cal.setTime(start_data);
+                                        cal.add(Calendar.DATE, 1);
+                                        start_data = cal.getTime();
+                                        mDatas.get(positions).setStart_time(start_data);
+                                        Calendar cal2 = Calendar.getInstance();
+                                        cal2.setTime(start_data);
+                                        cal2.add(Calendar.DATE, i);
+                                        Date end = cal2.getTime();
+                                        mDatas.get(positions).setEnd_time(end);
+                                    }
+                                }
+
+                            }
                             notifyDataSetChanged();
                         }
                         catch (NumberFormatException e1)
@@ -440,6 +497,7 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
         ImageView every_jian;
         ImageView myself_jia;
         ImageView myself_jian;
+        TextView du;
 
         public MyViewHolder(View view) {
             super(view);
@@ -452,6 +510,7 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
             every_jian=(ImageView)view.findViewById(R.id.everyday_jian);
             myself_jia=(ImageView)view.findViewById(R.id.ziding_jia);
             myself_jian=(ImageView)view.findViewById(R.id.ziding_jian);
+            du= (TextView) view.findViewById(R.id.du);
 
         }
     }
@@ -488,7 +547,7 @@ holder.every_jian.setOnClickListener(new View.OnClickListener() {
             TextView string2 = (TextView) item.findViewById(R.id.text_view_string2);
 
             Task item1 = this.getItem(position);
-            string1.setText(item1.getTast_name());
+            string1.setText(item1.getTask_name());
             if(item1.getDuration()==-1)
                 string2.setText("点击设置目标与时间");
             else if(item1.getCycle()==-1)
